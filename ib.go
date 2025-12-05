@@ -574,10 +574,7 @@ func (ib *IB) NewsTick() []NewsTick {
 
 // ReqCurrentTime asks the current system time on the server side.
 // A second call within a secund will not be answered.
-func (ib *IB) ReqCurrentTime() (currentTime time.Time, err error) {
-	ctx, cancel := context.WithTimeout(ib.eClient.Ctx(), ib.config.Timeout)
-	defer cancel()
-
+func (ib *IB) ReqCurrentTime(ctx context.Context) (currentTime time.Time, err error) {
 	ch, unsubscribe := ib.pubSub.Subscribe("CurrentTime")
 	defer unsubscribe()
 
