@@ -1796,6 +1796,9 @@ func (ib *IB) reqHistoricalData(contract *Contract, endDateTime string, duration
 			select {
 			case <-ctx.Done():
 				log.Error().Err(ctx.Err()).Int64("reqID", reqID).Msg("<ReqHistoricalData>")
+				if ib.ErrorCallback != nil {
+					ib.ErrorCallback(ctx.Err())
+				}
 				return
 			case msg, ok := <-ch:
 				if !ok {
