@@ -26,11 +26,12 @@ type CancelFunc func()
 // This state is automatically kept in sync with the TWS/IBG application.
 // IB has most request methods of EClient, with the same names and parameters (except for the reqId parameter which is not needed anymore).
 type IB struct {
-	state   *ibState
-	pubSub  *PubSub
-	eClient *ibapi.EClient
-	wrapper *WrapperSync
-	config  *Config
+	state         *ibState
+	pubSub        *PubSub
+	eClient       *ibapi.EClient
+	wrapper       *WrapperSync
+	config        *Config
+	ErrorCallback func(error)
 }
 
 func NewIB(config ...*Config) *IB {
@@ -1806,6 +1807,9 @@ func (ib *IB) reqHistoricalData(contract *Contract, endDateTime string, duration
 						log.Warn().Err(err).Int64("reqID", reqID).Msg("<ReqHistoricalData>")
 					} else {
 						log.Error().Err(err).Int64("reqID", reqID).Msg("<ReqHistoricalData>")
+						if ib.ErrorCallback != nil {
+							ib.ErrorCallback(err)
+						}
 					}
 					return
 				}
